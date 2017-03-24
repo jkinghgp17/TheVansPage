@@ -3,6 +3,8 @@ package KingBattleCodeV6;
 import battlecode.common.*;
 
 //World domination!
+//new comment
+
 
 public strictfp class RobotPlayer {
 	static RobotController rc;
