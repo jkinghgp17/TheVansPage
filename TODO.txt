@@ -15,3 +15,11 @@ Soldier
 -stop killing teammates
 -rewrite isConeCLear()
 -shoot through trees
+
+Priority List:
+-
+-
+-
+-
+-
+-
