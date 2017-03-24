@@ -1,0 +1,17 @@
+To Do:
+
+Scouts
+-follow archon
+-find archon
+-broadcast archon/gardener
+-make (num of archons) + 1
+-sense broadcasting locations
+
+Lumberjack
+-stop getting stuck
+
+Soldier
+-broadcast if cannot find archon in certain time
+-stop killing teammates
+-rewrite isConeCLear()
+-shoot through trees
