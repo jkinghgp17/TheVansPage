@@ -20,7 +20,7 @@ Soldier (J)
 -stop killing teammates
 -rewrite isConeCLear()
 -shoot through trees
--15 soldiers
+-15 soldiers then tanks
 
 Tank (J)
 -copy soldier code
