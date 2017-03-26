@@ -168,7 +168,19 @@ public class Gardener extends Robot {
 	 */
 	boolean needsMoreSoldiers() throws GameActionException {
 
-		return (rc.readBroadcast(RobotType.SOLDIER.ordinal()) < 40) && (rc.getRoundNum() < 2500);
+		return (rc.readBroadcast(RobotType.SOLDIER.ordinal()) < 15) && (rc.getRoundNum() < 2500);
+	}
+	
+	/**
+	 * Checks if more tanks are needed
+	 * 
+	 * @return
+	 * @throws GameActionException
+	 */
+	boolean needsMoreTanks() throws GameActionException {
+		// Tanks are limited to 15 (same as soldiers)
+		// Tanks are only built if we are in combat
+		return (rc.readBroadcast(RobotType.TANK.ordinal()) < 15 && rc.readBroadcast(LAST_BULLET_FIRED) + 5 >= rc.getRoundNum());
 	}
 
 	private void tryBuildRobots() throws GameActionException {
@@ -185,6 +197,8 @@ public class Gardener extends Robot {
 			buildRobot(RobotType.LUMBERJACK);
 		} else if (rc.hasRobotBuildRequirements(RobotType.SOLDIER) && needsMoreSoldiers()) {
 			buildRobot(RobotType.SOLDIER);
+		} else if (rc.hasRobotBuildRequirements(RobotType.TANK) && needsMoreTanks()) {
+			buildRobot(RobotType.TANK);
 		}
 	}
 

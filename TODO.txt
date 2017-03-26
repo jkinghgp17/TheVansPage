@@ -16,14 +16,14 @@ Lumberjack (P)
 -only create if solder doesn't find enemies in 30 rounds
 
 Soldier (J)
--broadcast if cannot find archon in certain time
--stop killing teammates
+-broadcast if cannot find archon in certain time (done)
+-stop killing team mates
 -rewrite isConeCLear()
 -shoot through trees
--15 soldiers then tanks
+-15 soldiers then tanks (done)
 
 Tank (J)
--copy soldier code
+-copy soldier code (done)
 
 ------------------------
 
