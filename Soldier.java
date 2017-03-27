@@ -71,12 +71,15 @@ public abstract class Soldier extends Robot {
 	}
 	
 	private void shootPentad(Direction dir) throws GameActionException {
-		if (isConeClear(dir, 6) || rc.canFirePentadShot()) {
+		if (isConeClear(dir, 15 * 5) && rc.canFirePentadShot()) {
 			rc.firePentadShot(dir);
-		} else if (isConeClear(dir, 4) || rc.canFireTriadShot()) {
+			rc.broadcast(LAST_BULLET_FIRED, rc.getRoundNum());
+		} else if (isConeClear(dir, 3 * 20) && rc.canFireTriadShot()) {
 			rc.fireTriadShot(dir);
-		} else if (isConeClear(dir, 1) || rc.canFireSingleShot()) {
+			rc.broadcast(LAST_BULLET_FIRED, rc.getRoundNum());
+		} else if (isConeClear(dir, 3) && rc.canFireSingleShot()) {
 			rc.fireSingleShot(dir);
+			rc.broadcast(LAST_BULLET_FIRED, rc.getRoundNum());
 		}
 	}
 

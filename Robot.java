@@ -33,6 +33,7 @@ public abstract class Robot {
 
 	float mapEdgeRight, mapEdgeTop, mapEdgeLeft, mapEdgeBottom;
 
+	static final int LAST_BULLET_FIRED = 6700;
 	static final int SCOUT_STATUS = 8000;
 	static final int SETTLED_GARDENER = 500;
 	static final int HIGH_PRIORITY_TARGET_OFFSET = 8240;
@@ -52,7 +53,7 @@ public abstract class Robot {
 	static final int ENEMY_GARDENER_COUNT = 5;
 	static final int DEFENDER_OFFSET = 1100;
 	static final int ATTACKER_OFFSET = 1101;
-	
+
 	Robot(RobotController rc) {
 		this.rc = rc;
 		this.enemy = rc.getTeam().opponent();
@@ -101,7 +102,7 @@ public abstract class Robot {
 			rc.broadcastFloat(ind + 0, initialArchonLocations[i].x);
 			rc.broadcastFloat(ind + 1, initialArchonLocations[i].y);
 			rc.broadcast(ind + 2, -1);
-			//Broadcast friendly archons
+			// Broadcast friendly archons
 			ind = ALLIED_ARCHON_LOCATIONS + i * 3;
 			rc.broadcastFloat(ind + 0, ourInitialArchonLocations[i].x);
 			rc.broadcastFloat(ind + 1, ourInitialArchonLocations[i].y);
@@ -135,7 +136,7 @@ public abstract class Robot {
 		considerBuyingVP();
 		Clock.yield();
 	}
-	
+
 	/**
 	 * @return 0 if nothing is hit, 1 if tree is hit, 2 if robot is hit
 	 */
@@ -154,14 +155,14 @@ public abstract class Robot {
 		}
 		return 0;
 	}
-	
+
 	/**
 	 * 
 	 */
 	boolean isTimeToAttackArchons() {
 		return (rc.getRoundNum() > 1500 || rc.getTeamBullets() > 250);
 	}
-	
+
 	/**
 	 * Attempts to move to a given MapLocation, while avoiding small obstacles
 	 * directly in the path.
@@ -236,8 +237,8 @@ public abstract class Robot {
 	/**
 	 * 
 	 */
-	 void cleanUpBroadcasts() throws GameActionException {
-		 for (int i = 0; i < ENEMY_GARDENER_COUNT; i++) {
+	void cleanUpBroadcasts() throws GameActionException {
+		for (int i = 0; i < ENEMY_GARDENER_COUNT; i++) {
 			int ind = ENEMY_GARDENER_OFFSET + i * 4;
 			if (rc.readBroadcast(ind + 3) > 100 + rc.getRoundNum()) {
 				rc.broadcast(ind, 0);
@@ -245,141 +246,141 @@ public abstract class Robot {
 				rc.broadcastFloat(ind + 2, 0);
 				rc.broadcast(ind + 3, 0);
 			}
-		 }
-		 for (int i = 0; i < NUMBER_OF_TARGETS; i++) {
-				int ind = HIGH_PRIORITY_TARGET_OFFSET + i * 4;
-				if (rc.readBroadcast(ind + 3) > 100 + rc.getRoundNum()) {
-					rc.broadcast(ind, 0);
-					rc.broadcastFloat(ind + 1, 0);
-					rc.broadcastFloat(ind + 2, 0);
-					rc.broadcast(ind + 3, 0);
-				}
-			 }
-	 }
-	 MapLocation lookForHome() throws GameActionException {
-			int tests = 0;
-			int maxTests = 50;
-			while (tests < maxTests) {
-				Direction dir = randomDirection();
-				for (int i = 0; i < 4; i++) {
-					MapLocation testLocation = rc.getLocation().add(dir, (float)i);
-					if (!rc.isCircleOccupiedExceptByThisRobot(testLocation,
-							type.bodyRadius + GameConstants.BULLET_TREE_RADIUS + GameConstants.GENERAL_SPAWN_OFFSET) && testLocation.distanceTo(spawnPoint) > rc.getLocation().distanceTo(spawnPoint)) {
-						return testLocation;
-					}
-				}
-				tests++;
-			}
-			return null;
 		}
-	 
-
-		void broadcastRobot(RobotInfo[] robots) throws GameActionException {
-			for (RobotInfo r : robots) {
-				switch (r.type) {
-				case ARCHON:
-					broadcastArchon(r);
-					break;
-				case GARDENER:
-					broadcastGardener(r);
-					break;
-				case SOLDIER:
-					broadcastSoldier(r);
-					break;
-				}
+		for (int i = 0; i < NUMBER_OF_TARGETS; i++) {
+			int ind = HIGH_PRIORITY_TARGET_OFFSET + i * 4;
+			if (rc.readBroadcast(ind + 3) > 100 + rc.getRoundNum()) {
+				rc.broadcast(ind, 0);
+				rc.broadcastFloat(ind + 1, 0);
+				rc.broadcastFloat(ind + 2, 0);
+				rc.broadcast(ind + 3, 0);
 			}
 		}
+	}
 
-		private void broadcastSoldier(RobotInfo robot) {
-
+	MapLocation lookForHome() throws GameActionException {
+		int tests = 0;
+		int maxTests = 50;
+		while (tests < maxTests) {
+			Direction dir = randomDirection();
+			for (int i = 0; i < 4; i++) {
+				MapLocation testLocation = rc.getLocation().add(dir, (float) i);
+				if (!rc.isCircleOccupiedExceptByThisRobot(testLocation,
+						type.bodyRadius + GameConstants.BULLET_TREE_RADIUS + GameConstants.GENERAL_SPAWN_OFFSET)
+						&& testLocation.distanceTo(spawnPoint) > rc.getLocation().distanceTo(spawnPoint)) {
+					return testLocation;
+				}
+			}
+			tests++;
 		}
+		return null;
+	}
 
-		private void broadcastArchon(RobotInfo robot) throws GameActionException {
-			// First see if this Archon has already been spotted
-			for (int i = 0; i < rc.readBroadcast(ARCHON_COUNT); i++) {
-				if (rc.readBroadcast(ARCHON_LOCATIONS + i * 3 + 2) == robot.ID) {
-					rc.broadcastFloat(ARCHON_LOCATIONS + i * 3, robot.location.x);
-					rc.broadcastFloat(ARCHON_LOCATIONS + i * 3 + 1, robot.location.y);
-					return;
-				}
-			}
-			// if find which Archons have not been found
-			float[] xPos = new float[rc.readBroadcast(ARCHON_COUNT)];
-			float[] yPos = new float[rc.readBroadcast(ARCHON_COUNT)];
-			for (int i = 0; i < rc.readBroadcast(ARCHON_COUNT); i++) {
-				if (rc.readBroadcast(ARCHON_LOCATIONS + i * 3 + 2) == -1) {
-					xPos[i] = rc.readBroadcastFloat(ARCHON_LOCATIONS + i * 3);
-					yPos[i] = rc.readBroadcastFloat(ARCHON_LOCATIONS + i * 3 + 1);
-				} else {
-					xPos[i] = -1;
-					yPos[i] = -1;
-				}
-			}
-			// Then find which of the avaliable archons is closest to the robot
-			// position
-			float bestDis = 10000;
-			int ind = 0;
-			for (int i = 0; i < rc.readBroadcast(ARCHON_COUNT); i++) {
-				if (xPos[i] != -1) {
-					MapLocation testLoc = new MapLocation(xPos[i], yPos[i]);
-					if (robot.location.distanceTo(testLoc) < bestDis) {
-						bestDis = robot.location.distanceTo(testLoc);
-						ind = i;
-					}
-				}
-			}
-			rc.broadcastFloat(ARCHON_LOCATIONS + ind * 3, robot.location.x);
-			rc.broadcastFloat(ARCHON_LOCATIONS + ind * 3 + 1, robot.location.y);
-			rc.broadcast(ARCHON_LOCATIONS + ind * 3 + 2, robot.ID);
-		}
-
-		private void broadcastGardener(RobotInfo robot) throws GameActionException {
-			// See if Gardener is already reported
-			for (int i = 0; i < ENEMY_GARDENER_COUNT; i++) {
-				int ind = ENEMY_GARDENER_OFFSET + i * 4;
-				if (rc.readBroadcast(ind + 2) == robot.ID) {
-					rc.broadcastFloat(ind, robot.location.x);
-					rc.broadcastFloat(ind + 1, robot.location.y);
-					rc.broadcast(ind + 3, rc.getRoundNum());
-					return;
-				}
-			}
-			// See if there is empty slot for Gardener
-			for (int i = 0; i < ENEMY_GARDENER_COUNT; i++) {
-				int ind = ENEMY_GARDENER_OFFSET + i * 4;
-				if (rc.readBroadcast(ind + 2) == 0) {
-					rc.broadcastFloat(ind, robot.location.x);
-					rc.broadcastFloat(ind + 1, robot.location.y);
-					rc.broadcast(ind + 2, robot.ID);
-					rc.broadcast(ind + 3, rc.getRoundNum());
-					return;
-				}
+	void broadcastRobot(RobotInfo[] robots) throws GameActionException {
+		for (RobotInfo r : robots) {
+			switch (r.type) {
+			case ARCHON:
+				broadcastArchon(r);
+				break;
+			case GARDENER:
+				broadcastGardener(r);
+				break;
+			case SOLDIER:
+				broadcastSoldier(r);
+				break;
 			}
 		}
-	
-	/**
-	 * 
-	 */
-	boolean isConeClear(Direction dir, int num) throws GameActionException {
-		int testNum = num;
-		boolean hit = false;
-		MapLocation testLoc = null;
-		for (int i = -1 * testNum; i < testNum; i++) {
-			Direction testDir = dir.rotateLeftDegrees(i * 5);
-			for (float walk = 1.5f; walk < type.sensorRadius; walk += 0.5f) {
-				testLoc = rc.getLocation().add(testDir, walk);
-				if (rc.isLocationOccupied(testLoc)) {
-					hit = true;	
-				} 
+	}
+
+	private void broadcastSoldier(RobotInfo robot) {
+
+	}
+
+	private void broadcastArchon(RobotInfo robot) throws GameActionException {
+		// First see if this Archon has already been spotted
+		for (int i = 0; i < rc.readBroadcast(ARCHON_COUNT); i++) {
+			if (rc.readBroadcast(ARCHON_LOCATIONS + i * 3 + 2) == robot.ID) {
+				rc.broadcastFloat(ARCHON_LOCATIONS + i * 3, robot.location.x);
+				rc.broadcastFloat(ARCHON_LOCATIONS + i * 3 + 1, robot.location.y);
+				return;
 			}
-			if (hit) {
-				rc.setIndicatorLine(rc.getLocation(), testLoc, 200, 0, 0);
+		}
+		// if find which Archons have not been found
+		float[] xPos = new float[rc.readBroadcast(ARCHON_COUNT)];
+		float[] yPos = new float[rc.readBroadcast(ARCHON_COUNT)];
+		for (int i = 0; i < rc.readBroadcast(ARCHON_COUNT); i++) {
+			if (rc.readBroadcast(ARCHON_LOCATIONS + i * 3 + 2) == -1) {
+				xPos[i] = rc.readBroadcastFloat(ARCHON_LOCATIONS + i * 3);
+				yPos[i] = rc.readBroadcastFloat(ARCHON_LOCATIONS + i * 3 + 1);
 			} else {
-				rc.setIndicatorLine(rc.getLocation(), testLoc, 0, 200, 0);
+				xPos[i] = -1;
+				yPos[i] = -1;
 			}
-			hit = false;
 		}
-		return false;
+		// Then find which of the avaliable archons is closest to the robot
+		// position
+		float bestDis = 10000;
+		int ind = 0;
+		for (int i = 0; i < rc.readBroadcast(ARCHON_COUNT); i++) {
+			if (xPos[i] != -1) {
+				MapLocation testLoc = new MapLocation(xPos[i], yPos[i]);
+				if (robot.location.distanceTo(testLoc) < bestDis) {
+					bestDis = robot.location.distanceTo(testLoc);
+					ind = i;
+				}
+			}
+		}
+		rc.broadcastFloat(ARCHON_LOCATIONS + ind * 3, robot.location.x);
+		rc.broadcastFloat(ARCHON_LOCATIONS + ind * 3 + 1, robot.location.y);
+		rc.broadcast(ARCHON_LOCATIONS + ind * 3 + 2, robot.ID);
+	}
+
+	private void broadcastGardener(RobotInfo robot) throws GameActionException {
+		// See if Gardener is already reported
+		for (int i = 0; i < ENEMY_GARDENER_COUNT; i++) {
+			int ind = ENEMY_GARDENER_OFFSET + i * 4;
+			if (rc.readBroadcast(ind + 2) == robot.ID) {
+				rc.broadcastFloat(ind, robot.location.x);
+				rc.broadcastFloat(ind + 1, robot.location.y);
+				rc.broadcast(ind + 3, rc.getRoundNum());
+				return;
+			}
+		}
+		// See if there is empty slot for Gardener
+		for (int i = 0; i < ENEMY_GARDENER_COUNT; i++) {
+			int ind = ENEMY_GARDENER_OFFSET + i * 4;
+			if (rc.readBroadcast(ind + 2) == 0) {
+				rc.broadcastFloat(ind, robot.location.x);
+				rc.broadcastFloat(ind + 1, robot.location.y);
+				rc.broadcast(ind + 2, robot.ID);
+				rc.broadcast(ind + 3, rc.getRoundNum());
+				return;
+			}
+		}
+	}
+
+	/**
+	 * Sees if there are any allied robots in given direction
+	 * 
+	 * @param dir-
+	 *            Direction to shoot
+	 * @param num-
+	 *            number of places to check around the dir
+	 */
+	boolean isConeClear(Direction dir, int off) throws GameActionException {
+		// Bug
+		return true;
+		// Bug
+		/*RobotInfo[] robots = rc.senseNearbyRobots(-1, ally);
+
+		for (RobotInfo r : robots) {
+			Direction testDir = rc.getLocation().directionTo(r.getLocation());
+			float testDis = rc.getLocation().distanceTo(r.getLocation());
+			if (testDir.equals(dir, ((float)Math.PI * off) / 180.0f)) {
+				return false;
+			}
+		}
+		return true;*/
 	}
 
 	/**

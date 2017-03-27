@@ -9,13 +9,15 @@ import battlecode.common.RobotInfo;
 import battlecode.common.Team;
 import battlecode.common.GameConstants;
 
-
-public class Tank extends Robot  {
+// Almost exact copy of Attacker type soldier
+public class Tank extends Soldier  {
 
 	Tank(RobotController rc) {
 		super(rc);
 		// TODO Auto-generated constructor stub
 	}
+
+	int timeSpentMoving = 0;
 
 	@Override
 	void onUpdate() throws GameActionException {
@@ -25,10 +27,65 @@ public class Tank extends Robot  {
 		// See if there are any nearby bullets
 		BulletInfo[] bullets = rc.senseNearbyBullets(-1);
 
+		broadcastRobot(robots);
+
+		timeSpentMoving++;
+
 		if (robots.length > 0) {
-			target = robots[0].getLocation();
+			chase(robots[0]);
 		} else {
-			target = initialArchonLocations[(int) (rnd * initialArchonLocations.length)];
+			if (target == null) {
+				float closestDis = 100000;
+				int ind = 0;
+				for (int i = 0; i < rc.readBroadcast(ARCHON_COUNT); i++) {
+					float x = rc.readBroadcastFloat(ARCHON_LOCATIONS + i * 3);
+					float y = rc.readBroadcastFloat(ARCHON_LOCATIONS + i * 3 + 1);
+					int ID = rc.readBroadcast(ARCHON_LOCATIONS + i * 3 + 2);
+					MapLocation loc = new MapLocation(x, y);
+					for (MapLocation mp : badTargets) {
+						if (mp != null && loc != null) {
+							if (mp.equals(loc)) {
+								continue;
+							}
+						}
+					}
+					if (rc.getLocation().distanceTo(loc) < closestDis) {
+						closestDis = rc.getLocation().distanceTo(loc);
+						ind = ARCHON_LOCATIONS + i * 3;
+					}
+				}
+				for (int i = 0; i < ENEMY_GARDENER_COUNT; i++) {
+					if (rc.readBroadcast(ENEMY_GARDENER_OFFSET + i * 4 + 3) != 0) {
+						float x = rc.readBroadcastFloat(ENEMY_GARDENER_OFFSET + i * 4);
+						float y = rc.readBroadcastFloat(ENEMY_GARDENER_OFFSET + i * 4 + 1);
+						MapLocation loc = new MapLocation(x, y);
+						for (MapLocation mp : badTargets) {
+							if (mp != null && loc != null) {
+								if (mp.equals(loc)) {
+									continue;
+								}
+							}
+						}
+						if (rc.getLocation().distanceTo(loc) < closestDis) {
+							closestDis = rc.getLocation().distanceTo(loc);
+							ind = ENEMY_GARDENER_OFFSET + i * 4;
+						}
+					}
+				}
+				float x = rc.readBroadcastFloat(ind);
+				float y = rc.readBroadcastFloat(ind + 1);
+				target = new MapLocation(x, y);
+				timeSpentMoving = 0;
+			} else {
+				if (rc.getLocation().distanceTo(target) < 3.50f) {
+					badTargets.add(target);
+					target = null;
+				}
+				if (timeSpentMoving > 100) {
+					badTargets.add(target);
+					target = null;
+				}
+			}
 		}
 
 		for (BulletInfo b : bullets) {
@@ -36,26 +93,29 @@ public class Tank extends Robot  {
 				tryMove(b.getDir().rotateLeftDegrees(90));
 			}
 		}
-		if (!rc.hasMoved()) {
-			tryMove(rc.getLocation(), target);
+		if (!rc.hasMoved() && target != null) {
+			// If the tank can move straight to target do so
+			/*if (rc.canMove(target)) {
+				rc.move(target);
+			}*/
+			// Otherwise use bugPathing
+			if (!rc.hasMoved())	
+				bugPathToLoc(target);
 		}
 		// If there are some...
 		if (robots.length > 0) {
 			// And we have enough bullets, and haven't attacked yet this
 			// turn...
-			if (rc.canFirePentadShot()) {
-				// ...Then fire a bullet in the direction of the enemy.
-				rc.firePentadShot(rc.getLocation().directionTo(robots[0].location));
+			shootTarget(robots[0]);
+		}
+		if (debug) {
+			if (target != null) {
+				rc.setIndicatorLine(rc.getLocation(), target, 200, 200, 200);
 			}
 		}
-		//if (debug) {
-		//	if (target != null) {
-		//		rc.setIndicatorLine(rc.getLocation(), target, 200, 200, 200);
-		//	}
-		//}
 
 		// Clock.yield() makes the robot wait until the next turn, then
 		// it will perform this loop again
-		Clock.yield();
+		doCrapAndYield();
 	}
 }
