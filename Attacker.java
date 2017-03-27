@@ -1,4 +1,4 @@
-package KingBattleCodeV6;
+package TheVansPage;
 
 import battlecode.common.BulletInfo;
 import battlecode.common.GameActionException;

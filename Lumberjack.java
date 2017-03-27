@@ -1,4 +1,4 @@
-package KingBattleCodeV6;
+package TheVansPage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,14 +36,16 @@ public class Lumberjack extends Robot {
 
 		// See if there are any enemy robots within striking range
 		// (distance 1 from lumberjack's radius)
+		/*
 		RobotInfo[] robotsStrike = rc.senseNearbyRobots(
 				RobotType.LUMBERJACK.bodyRadius + GameConstants.LUMBERJACK_STRIKE_RADIUS, enemy);
 
 		if (robotsStrike.length > 0 && !rc.hasAttacked()) {
 			// Use strike() to hit all nearby robots!
 			rc.strike();
-		}
+		}*/
 
+		/*
 		// See if there are any nearby enemy robots
 		RobotInfo[] robots = rc.senseNearbyRobots(-1, enemy);
 
@@ -82,14 +84,42 @@ public class Lumberjack extends Robot {
 					target = null;
 				}
 			}
-		}
+		}*/
 
+		/*
 		for (BulletInfo b : bullets) {
 			if (willCollideWithMe(b)) {
 				if (!rc.hasMoved())
 					tryMove(b.getDir().rotateLeftDegrees(90));
 			}
-		}
+		}*/
+		
+		//Deforestation
+    	///
+    	
+         TreeInfo[] trees = rc.senseNearbyTrees();
+
+         MapLocation minMove = null;
+         for (TreeInfo t : trees) {
+        	 if (minMove == null || (rc.getLocation().distanceTo(t.location) < rc.getLocation().distanceTo(minMove))) {
+        		 if (t.team==Team.NEUTRAL) {
+        			 minMove = t.location;
+        			 rc.setIndicatorDot(minMove, 0, 255, 255);
+        		 }
+        	 }
+         }
+         
+         for (TreeInfo t : trees) {
+        	 
+        	 if (rc.canShake(t.getLocation()) && t.containedBullets > 0 && t.team==Team.NEUTRAL) {
+                 rc.shake(t.getLocation());  
+             }
+        	 
+             if (rc.canChop(t.getLocation()) && t.team==Team.NEUTRAL) {
+                 rc.chop(t.getLocation());
+             }
+         }
+		
 		if (!rc.hasMoved() && target != null) {
 			tryMove(rc.getLocation(), target);
 			/*if (!rc.hasMoved()) {
@@ -97,7 +127,7 @@ public class Lumberjack extends Robot {
 			}*/
 		}
 
-		tryShakeTrees();
+		//tryShakeTrees();
 
 		// Clock.yield() makes the robot wait until the next turn, then
 		// it will perform this loop again
