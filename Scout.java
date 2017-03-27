@@ -1,4 +1,4 @@
-package KingBattleCodeV6;
+package TheVansPage;
 
 import battlecode.common.RobotController;
 import battlecode.common.RobotInfo;

@@ -30,6 +30,8 @@ public class Gardener extends Robot {
 	int timeLooking = 0;
 
 	int totalTimeLooking = 0;
+	
+	boolean didILumber = false;
 
 	Direction dirFromArchon;
 
@@ -47,7 +49,17 @@ public class Gardener extends Robot {
 
 	@Override
 	void onUpdate() throws GameActionException {
-
+		
+		//Create 1 lumberjack.
+		if (!didILumber) {
+			Direction dir = rc.getLocation().directionTo(initialArchonLocations[0]))
+            if (rc.canBuildRobot(RobotType.LUMBERJACK,dir) {
+                rc.buildRobot(RobotType.LUMBERJACK,dir);
+                didILumber = true;
+                break;
+            }	
+        }
+		
 		if (debug && hasHome) {
 			for (int i = 0; i < myTreeLocs.length; i++) {
 				if (rc.isLocationOccupiedByTree(myTreeLocs[i])) {
@@ -87,6 +99,8 @@ public class Gardener extends Robot {
 				}
 				timeLooking = 0;
 			}
+			
+			
 			if (target != null && !rc.hasMoved()) {
 				if (debug) {
 					rc.setIndicatorLine(rc.getLocation(), target, 200, 200, 200);
