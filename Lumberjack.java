@@ -97,7 +97,7 @@ public class Lumberjack extends Robot {
 		//Deforestation
     	///
     	
-         TreeInfo[] trees = rc.senseNearbyTrees();
+         trees = rc.senseNearbyTrees();
 
          MapLocation minMove = null;
          for (TreeInfo t : trees) {

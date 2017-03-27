@@ -1,4 +1,4 @@
-package KingBattleCodeV6;
+package TheVansPage;
 
 import battlecode.common.Clock;
 import battlecode.common.Direction;
@@ -52,11 +52,10 @@ public class Gardener extends Robot {
 		
 		//Create 1 lumberjack.
 		if (!didILumber) {
-			Direction dir = rc.getLocation().directionTo(initialArchonLocations[0]))
-            if (rc.canBuildRobot(RobotType.LUMBERJACK,dir) {
+			Direction dir = rc.getLocation().directionTo(initialArchonLocations[0]);
+            if (rc.canBuildRobot(RobotType.LUMBERJACK,dir)) {
                 rc.buildRobot(RobotType.LUMBERJACK,dir);
                 didILumber = true;
-                break;
             }	
         }
 		
@@ -198,7 +197,7 @@ public class Gardener extends Robot {
 	}
 
 	boolean needsMoreLumberjacks() throws GameActionException {
-		if (rc.readBroadcastBoolean(NEED_LUMBER) {
+		if (rc.readBroadcastBoolean(NEED_LUMBER)) {
 			rc.broadcastBoolean(NEED_LUMBER, false);
 			return true;
 		}
@@ -212,7 +211,7 @@ public class Gardener extends Robot {
 		 */ if (rc.hasRobotBuildRequirements(RobotType.SCOUT) && rc.readBroadcast(SCOUT_STATUS) + 2 < rc.getRoundNum()
 				&& rc.readBroadcast(RobotType.SCOUT.ordinal()) < ((rc.getRoundNum() < 1500) ? 5 : 10)) {
 			buildRobot(RobotType.SCOUT);
-		} else if ((rc.hasRobotBuildRequirements(RobotType.LUMBERJACK) && needsMoreLumberjacks()) {
+		} else if ((rc.hasRobotBuildRequirements(RobotType.LUMBERJACK) && needsMoreLumberjacks())) {
 			buildRobot(RobotType.LUMBERJACK);
 		} else if (rc.hasRobotBuildRequirements(RobotType.SOLDIER) && needsMoreSoldiers()) {
 			buildRobot(RobotType.SOLDIER);
