@@ -88,6 +88,9 @@ public class Attacker extends Soldier {
 				tryMove(b.getDir().rotateLeftDegrees(90));
 			}
 		}
+		if (spawnRound + 45 == rc.getRoundNum()) {
+			rc.broadcastBoolean(NEED_LUMBER, true);
+		}
 		if (!rc.hasMoved() && target != null) {
 			bugPathToLoc(target);
 		}
