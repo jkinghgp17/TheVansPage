@@ -118,7 +118,7 @@ public class Gardener extends Robot {
 					}
 				}
 				if (target != null) {
-					if (rc.getLocation().distanceTo(target) > 7 || timeLooking > 30) {
+					if (rc.getLocation().distanceTo(target) > 7 || timeLooking > 15) {
 						target = null;
 					}
 				}

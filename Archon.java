@@ -110,6 +110,10 @@ public class Archon extends Robot {
 			System.out.println(RobotType.LUMBERJACK.ordinal());
 		}
 
+		if (target != null) {
+			rc.setIndicatorLine(rc.getLocation(), target, 200, 0, 200);
+		}
+		
 		doCrapAndYield();
 	}
 
