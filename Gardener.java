@@ -1,4 +1,4 @@
-package KingBattleCodeV6;
+package TheVansPage;
 
 import battlecode.common.Clock;
 import battlecode.common.Direction;
@@ -52,11 +52,9 @@ public class Gardener extends Robot {
 		
 		//Create 1 lumberjack.
 		if (!didILumber) {
-			Direction dir = rc.getLocation().directionTo(initialArchonLocations[0]))
-            if (rc.canBuildRobot(RobotType.LUMBERJACK,dir) {
-                rc.buildRobot(RobotType.LUMBERJACK,dir);
+            if (buildRobot(RobotType.LUMBERJACK)) {
+                buildRobot(RobotType.LUMBERJACK);
                 didILumber = true;
-                break;
             }	
         }
 		
@@ -158,17 +156,18 @@ public class Gardener extends Robot {
 	 * 
 	 * @throws GameActionException
 	 */
-	void buildRobot(RobotType type) throws GameActionException {
+	boolean buildRobot(RobotType type) throws GameActionException {
 		if (rc.hasRobotBuildRequirements(type)) {
 			for (int i = 0; i < 10; i++) {
 				Direction dir = randomDirection();
 				if (rc.canBuildRobot(type, dir)) {
 					rc.buildRobot(type, dir);
 					rc.broadcast(type.ordinal(), rc.readBroadcast(type.ordinal()) + 1);
-					return;
+					return true;
 				}
 			}
 		}
+		return false;
 	}
 
 	boolean needsBattleScouts() {
