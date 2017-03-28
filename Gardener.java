@@ -49,21 +49,21 @@ public class Gardener extends Robot {
 
 	@Override
 	void onUpdate() throws GameActionException {
-		
+		/*
 		//Create 1 lumberjack.
 		if (!didILumber) {
-<<<<<<< HEAD
+//<<<<<<< HEAD
             if (buildRobot(RobotType.LUMBERJACK)) {
                 buildRobot(RobotType.LUMBERJACK);
-=======
+//=======
 			Direction dir = rc.getLocation().directionTo(initialArchonLocations[0]);
             if (rc.canBuildRobot(RobotType.LUMBERJACK,dir)) {
                 rc.buildRobot(RobotType.LUMBERJACK,dir);
->>>>>>> origin/master
+//>>>>>>> origin/master
                 didILumber = true;
             }	
         }
-		
+		*/
 		if (debug && hasHome) {
 			for (int i = 0; i < myTreeLocs.length; i++) {
 				if (rc.isLocationOccupiedByTree(myTreeLocs[i])) {
@@ -138,6 +138,7 @@ public class Gardener extends Robot {
 
 		doCrapAndYield();
 	}
+	
 
 	private MapLocation moveAwayFromArchon() {
 		if (rc.canMove(dirFromArchon)) {

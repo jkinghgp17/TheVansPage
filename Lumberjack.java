@@ -97,11 +97,11 @@ public class Lumberjack extends Robot {
 		//Deforestation
     	///
     	
-<<<<<<< HEAD
+//<<<<<<< HEAD
          TreeInfo[] treesTwo = rc.senseNearbyTrees();
-=======
+//=======
          trees = rc.senseNearbyTrees();
->>>>>>> origin/master
+//>>>>>>> origin/master
 
          MapLocation minMove = null;
          for (TreeInfo t : treesTwo) {
