@@ -34,7 +34,7 @@ public strictfp class RobotPlayer {
 			robot = new Gardener(rc);
 			break;
 		case SOLDIER:
-			robot = createSoldier(rc);
+			robot = /*createSoldier(rc)*/ new Attacker(rc);
 			break;
 		case LUMBERJACK:
 			robot = new Lumberjack(rc);

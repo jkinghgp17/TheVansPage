@@ -33,8 +33,9 @@ public abstract class Robot {
 
 	float mapEdgeRight, mapEdgeTop, mapEdgeLeft, mapEdgeBottom;
 
-	static final int LAST_BULLET_FIRED = 6700;
-	static final int SCOUT_STATUS = 8000;
+	static final int NEED_LUMBER = 1500;
+       	static final int LAST_BULLET_FIRED = 6700;
+       	static final int SCOUT_STATUS = 8000;
 	static final int SETTLED_GARDENER = 500;
 	static final int HIGH_PRIORITY_TARGET_OFFSET = 8240;
 	static final int GARDENER_OFFSET = 25;

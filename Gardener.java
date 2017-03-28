@@ -52,8 +52,14 @@ public class Gardener extends Robot {
 		
 		//Create 1 lumberjack.
 		if (!didILumber) {
+<<<<<<< HEAD
             if (buildRobot(RobotType.LUMBERJACK)) {
                 buildRobot(RobotType.LUMBERJACK);
+=======
+			Direction dir = rc.getLocation().directionTo(initialArchonLocations[0]);
+            if (rc.canBuildRobot(RobotType.LUMBERJACK,dir)) {
+                rc.buildRobot(RobotType.LUMBERJACK,dir);
+>>>>>>> origin/master
                 didILumber = true;
             }	
         }
@@ -117,7 +123,7 @@ public class Gardener extends Robot {
 					}
 				}
 				if (target != null) {
-					if (rc.getLocation().distanceTo(target) > 7 || timeLooking > 30) {
+					if (rc.getLocation().distanceTo(target) > 7 || timeLooking > 15) {
 						target = null;
 					}
 				}
@@ -196,6 +202,13 @@ public class Gardener extends Robot {
 		return (rc.readBroadcast(RobotType.TANK.ordinal()) < 15 && rc.readBroadcast(LAST_BULLET_FIRED) + 5 >= rc.getRoundNum());
 	}
 
+	boolean needsMoreLumberjacks() throws GameActionException {
+		if (rc.readBroadcastBoolean(NEED_LUMBER)) {
+			rc.broadcastBoolean(NEED_LUMBER, false);
+			return true;
+		}
+		return ((rc.readBroadcast(RobotType.LUMBERJACK.ordinal()) < LUMBERJACK_MAX) && (rc.senseNearbyTrees(-1, Team.NEUTRAL).length > 3));	
+	}
 	private void tryBuildRobots() throws GameActionException {
 		/*
 		 * if (needsBattleScouts() &&
@@ -204,9 +217,7 @@ public class Gardener extends Robot {
 		 */ if (rc.hasRobotBuildRequirements(RobotType.SCOUT) && rc.readBroadcast(SCOUT_STATUS) + 2 < rc.getRoundNum()
 				&& rc.readBroadcast(RobotType.SCOUT.ordinal()) < ((rc.getRoundNum() < 1500) ? 5 : 10)) {
 			buildRobot(RobotType.SCOUT);
-		} else if ((rc.hasRobotBuildRequirements(RobotType.LUMBERJACK))
-				&& (rc.readBroadcast(RobotType.LUMBERJACK.ordinal()) < LUMBERJACK_MAX)
-				&& (rc.senseNearbyTrees(-1, Team.NEUTRAL).length > 3)) {
+		} else if ((rc.hasRobotBuildRequirements(RobotType.LUMBERJACK) && needsMoreLumberjacks())) {
 			buildRobot(RobotType.LUMBERJACK);
 		} else if (rc.hasRobotBuildRequirements(RobotType.SOLDIER) && needsMoreSoldiers()) {
 			buildRobot(RobotType.SOLDIER);
