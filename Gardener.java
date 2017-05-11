@@ -134,7 +134,7 @@ public class Gardener extends Robot {
 		}
 
 		tryShakeTrees();
-		tryBuildRobots();
+		//tryBuildRobots();
 
 		doCrapAndYield();
 	}

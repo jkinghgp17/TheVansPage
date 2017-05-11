@@ -33,18 +33,6 @@ public strictfp class RobotPlayer {
 		case GARDENER:
 			robot = new Gardener(rc);
 			break;
-		case SOLDIER:
-			robot = /*createSoldier(rc)*/ new Attacker(rc);
-			break;
-		case LUMBERJACK:
-			robot = new Lumberjack(rc);
-			break;
-		case TANK:
-			robot = new Tank(rc);
-			break;
-		case SCOUT:
-			robot = /*createScout(rc);*/ new Scout(rc);
-			break;
 		}
 		while (true) {
 			try {
@@ -78,20 +66,4 @@ public strictfp class RobotPlayer {
 		return null;
 	}
 	*/
-	static Robot createSoldier(RobotController rc) {
-		try {
-			int aCnt = rc.readBroadcast(Robot.ATTACKER_OFFSET);
-			int dCnt = rc.readBroadcast(Robot.DEFENDER_OFFSET);
-			if ((dCnt == 0 || dCnt * 2 < aCnt) && false) {
-				rc.broadcast(Robot.DEFENDER_OFFSET, dCnt + 1);
-				return new Defender(rc);
-			} else {
-				rc.broadcast(Robot.ATTACKER_OFFSET, dCnt + 1);
-				return new Attacker(rc);
-			}
-		} catch (GameActionException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
 }
