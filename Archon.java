@@ -1,4 +1,4 @@
-package TheVansPage;
+package masterFarmerShrine;
 
 import battlecode.common.*;
 

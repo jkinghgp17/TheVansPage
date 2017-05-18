@@ -1,4 +1,4 @@
-package TheVansPage;
+package masterFarmerShrine;
 
 import java.util.ArrayList;
 
@@ -424,6 +424,10 @@ public abstract class Robot {
 								}
 							}
 							score += 100 - hits * 5;
+							// Look for closest gardeners
+							RobotInfo[] gardeners = rc.senseNearbyRobots(-1, ally);
+							RobotInfo[] badGardeners = rc.senseNearbyRobots(-1, enemy);
+							score += rc.getLocation().distanceTo(badGardeners[0].location) - rc.getLocation().distanceTo(gardeners[0].location);
 							if (score > bestScore) {
 								bestScore = score;
 								bestLoc = loc;
